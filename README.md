@@ -82,7 +82,11 @@ The expected format of the images:
 - color images - 8 bit in PNG. Resolution: VGA
 - depth images - 16 bit monochrome in PNG, scaled by 1000. Resolution: VGA
 
-**Example sequences** - coming soon
+**Example sequences**
+
+[ball] (https://www.dropbox.com/s/fvlvzom98w2f0ja/ball.zip?dl=0)
+
+[selfie] (https://www.dropbox.com/s/4fz53mspxqfo15m/selfie.zip?dl=0)
                
 **All parameters are optimised for QVGA resolution.**
 
