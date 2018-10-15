@@ -1,0 +1,3 @@
+StaticFusion is distributed under the GPL license: GPL-LICENSE.txt
+StaticFusion utilises the open-source software ElasticFusion, which is distributed under the license described in the file: ElasticFusion-LICENSE.txt
+
