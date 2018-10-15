@@ -84,9 +84,9 @@ The expected format of the images:
 
 **Example sequences**
 
-[ball] (https://www.dropbox.com/s/fvlvzom98w2f0ja/ball.zip?dl=0)
+[ball](https://www.dropbox.com/s/fvlvzom98w2f0ja/ball.zip?dl=0)
 
-[selfie] (https://www.dropbox.com/s/4fz53mspxqfo15m/selfie.zip?dl=0)
+[selfie](https://www.dropbox.com/s/4fz53mspxqfo15m/selfie.zip?dl=0)
                
 **All parameters are optimised for QVGA resolution.**
 
