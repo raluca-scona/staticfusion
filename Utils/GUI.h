@@ -182,7 +182,7 @@ class GUI
             glPushMatrix();
             glMultMatrixf( pose.data() );
 
-            pangolin::glDrawFrustrum((GLfloat)Kinv(0,2), (GLfloat)Kinv(1,2), (GLfloat)Kinv(0,0), (GLfloat)Kinv(1,1),
+            pangolin::glDrawFrustum((GLfloat)Kinv(0,2), (GLfloat)Kinv(1,2), (GLfloat)Kinv(0,0), (GLfloat)Kinv(1,1),
                            Resolution::getInstance().width(), Resolution::getInstance().height(), scale);
 
             glPopMatrix();
