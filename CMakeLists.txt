@@ -5,6 +5,8 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 endif(COMMAND cmake_policy)
 
+set(CMAKE_CXX_STANDARD 11)
+
 # custom cmake modules
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
@@ -67,12 +69,13 @@ TARGET_LINK_LIBRARIES(StaticFusion-Datasets 	sf_lib)
 #To test it with pre-recorded RGB-D sequences		
 ADD_EXECUTABLE(StaticFusion-ImageSeqAssoc 	StaticFusion-imagesequenceassoc.cpp)
 TARGET_LINK_LIBRARIES(StaticFusion-ImageSeqAssoc 	sf_lib)
+
+add_definitions(-DSHADER_DIR="${sfusion_SHADER_DIR}")
 		
-set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3 -std=c++11 -DSHADER_DIR=${sfusion_SHADER_DIR}")		
+set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3")
 
 # Set optimized building:
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	SET(CMAKE_BUILD_TYPE "Release")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mtune=native -mavx -std=c++11")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -mavx")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
