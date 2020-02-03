@@ -61,7 +61,7 @@ int Parse::arg(int argc, char** argv, const char* str, int &val) const
 
 std::string Parse::shaderDir() const
 {
-    std::string currentVal = STR(SHADER_DIR);
+    const std::string currentVal = SHADER_DIR;
 
     assert(pangolin::FileExists(currentVal) && "Shader directory not found!");
 
