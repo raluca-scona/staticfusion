@@ -52,9 +52,8 @@
 
 #include <opencv2/core/eigen.hpp>
 
-int main()
-{	
-
+int main(int argc, char* argv[])
+{
     unsigned int res_factor = 2;
     StaticFusion staticFusion(res_factor);
 
@@ -64,6 +63,14 @@ int main()
 
     const bool save_results = true;
     Datasets dataset(res_factor);
+
+    if(argc<2) {
+        throw std::runtime_error("missing log file");
+    }
+    else {
+        //Set dir of the Rawlog file
+        dataset.filename = argv[1];
+    }
 
     //Parameters
     //----------------------------------------------------------
@@ -92,9 +99,6 @@ int main()
     //Map
     cv::Mat depth_full = cv::Mat(staticFusion.height, staticFusion.width,  CV_16U, 0.0);
     cv::Mat color_full = cv::Mat(staticFusion.height, staticFusion.width,  CV_8UC3,  cv::Scalar(0,0,0));
-
-    //Set dir of the Rawlog file
-     dataset.filename = "/home/datasets/tum-benchmark-mrpt/rawlog_rgbd_dataset_freiburg3_walking_xyz/rgbd_dataset_freiburg3_walking_xyz.rawlog";
 
 	//Initialize
 	if (save_results)

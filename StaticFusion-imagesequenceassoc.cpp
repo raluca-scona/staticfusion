@@ -46,8 +46,14 @@
 #include <iostream>
 #include <fstream>
 
-int main()
-{	
+int main(int argc, char* argv[])
+{
+    if(argc<2) {
+        throw std::runtime_error("missing log file");
+    }
+
+    const std::string dir = argv[1];
+
     const unsigned int res_factor = 2;
     StaticFusion staticFusion(res_factor);
 
@@ -76,8 +82,6 @@ int main()
     //Set first image to load, decimation factor and the sequence dir
     int im_count = 1;
     const unsigned int decimation = 1;
-
-    std::string dir = "/home/datasets/mariano-ball/";
 
     std::vector<double> timestamps;
     std::vector<std::string> filesDepth;
