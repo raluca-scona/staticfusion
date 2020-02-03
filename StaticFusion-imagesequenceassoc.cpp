@@ -87,9 +87,13 @@ int main(int argc, char* argv[])
     std::vector<std::string> filesDepth;
     std::vector<std::string> filesColor;
 
-    std::string assocFile = "rgbd_assoc.txt";
+    const std::string assocFile = "/rgbd_assoc.txt";
 
     staticFusion.loadAssoc(dir, assocFile, timestamps, filesDepth, filesColor);
+
+    if (filesDepth.empty() || filesColor.empty()) {
+        throw std::runtime_error("no image files");
+    }
 
     cv::Mat weightedImage;
 
