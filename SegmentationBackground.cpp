@@ -179,6 +179,12 @@ void StaticFusion::buildSegmImage()
     const MatrixXi &labels_maxres = clusterAllocation[0];
     for (unsigned int u=0; u<cols; u++)
         for (unsigned int v=0; v<rows; v++) {
+            if (labels_maxres(v,u)==NUM_CLUSTERS) {
+                // assume static for invalid cluster
+                b_segm_perpixel(v,u) = 1;
+                continue;
+            }
+
             b_segm_perpixel(v,u) = max(0.f, min(1.f, b_segm[labels_maxres(v,u)]));
 
             if ( perClusterAverageResidual(labels_maxres(v, u)) < 0.017) {
