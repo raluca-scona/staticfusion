@@ -17,18 +17,33 @@ find_package(Pangolin 0.1 REQUIRED)
 #Find dependencies (Eigen is included in MRPT)
 find_package(MRPT REQUIRED base obs)
 find_package(OpenCV REQUIRED)
-find_package(OpenNI2 REQUIRED)
+find_package(OpenNI2)
+
+if(NOT OpenNI2_FOUND)
+    message(STATUS "OpenNI2 not found. Will not use online live mode.")
+endif()
+
 
 set(sfusion_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Shaders" CACHE PATH "Where the shaders live")
 
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${OpenNI2_INCLUDE_DIRS})
+if(OpenNI2_FOUND)
+    include_directories(${OpenNI2_INCLUDE_DIRS})
+endif()
 
 include_directories(${Pangolin_INCLUDE_DIRS})
 include_directories(${EIGEN_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-file(GLOB sf_utils_srcs Utils/*)
+set(sf_utils_srcs
+    "Utils/Datasets.cpp"
+    "Utils/GPUTexture.cpp"
+    "Utils/Parse.cpp"
+)
+if(OpenNI2_FOUND)
+    list(APPEND sf_utils_srcs "Utils/RGBD_Camera.cpp")
+endif()
+
 file(GLOB sf_shader_srcs Shaders/*.cpp)
 
 file(GLOB sf_srcs 
@@ -53,14 +68,19 @@ ADD_LIBRARY(sf_lib
 	
 TARGET_LINK_LIBRARIES(sf_lib
 	${MRPT_LIBS}
-	${OpenNI2_LIBRARY}
 	${OpenCV_LIBS}
    	${Pangolin_LIBRARIES}
 )
+
+if(OpenNI2_FOUND)
+    TARGET_LINK_LIBRARIES(sf_lib ${OpenNI2_LIBRARY})
+endif()
 		
-#To run online with an RGB-D camera	
-ADD_EXECUTABLE(StaticFusion-Camera 	StaticFusion-camera.cpp)	
-TARGET_LINK_LIBRARIES(StaticFusion-Camera 	sf_lib)
+#To run online with an RGB-D camera
+if(OpenNI2_FOUND)
+    ADD_EXECUTABLE(StaticFusion-Camera 	StaticFusion-camera.cpp)
+    TARGET_LINK_LIBRARIES(StaticFusion-Camera 	sf_lib)
+endif()
 		
 #To test it with the TUM dataset		
 ADD_EXECUTABLE(StaticFusion-Datasets 	StaticFusion-datasets.cpp)
