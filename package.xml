@@ -51,18 +51,11 @@
 
   <buildtool_depend>cmake</buildtool_depend>
 
-  <build_depend>glut</build_depend>
-  <build_depend>libglew-dev</build_depend>
-  <build_depend>libopencv-dev</build_depend>
-  <build_depend>mrpt</build_depend>
-  <build_export_depend>glut</build_export_depend>
-  <build_export_depend>libglew-dev</build_export_depend>
-  <build_export_depend>libopencv-dev</build_export_depend>
-  <build_export_depend>mrpt</build_export_depend>
-  <exec_depend>glut</exec_depend>
-  <exec_depend>libglew-dev</exec_depend>
-  <exec_depend>libopencv-dev</exec_depend>
-  <exec_depend>mrpt</exec_depend>
+  <depend>glut</depend>
+  <depend>libglew-dev</depend>
+  <depend>libopencv-dev</depend>
+  <depend>mrpt</depend>
+  <depend>pangolin</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
