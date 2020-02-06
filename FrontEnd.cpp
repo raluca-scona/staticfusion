@@ -221,7 +221,7 @@ bool StaticFusion::loadImageFromSequenceAssoc(const std::string &depthFile, cons
 
     if (color.data == NULL)
     {
-        printf("\n End of sequence (or color image not found...)");
+        printf("End of sequence (or color image not found...)\n");
         return true;
     }
 
@@ -678,7 +678,7 @@ void StaticFusion::solveOdometryAndSegmJoint()
 
         if ((delta_sol_max < irls_delta_threshold)||(k == max_iter_irls))
         {
-            //printf("\n Level = %d: last mean_static_res = %f", level, static_res / count_static);
+            //printf("Level = %d: last mean_static_res = %f\n", level, static_res / count_static);
             break;
         }
     }
@@ -719,7 +719,7 @@ void StaticFusion::filterEstimateAndComputeT(Vector6f &twist)
         SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
         if (eigensolver.info() != Success)
         {
-            printf("\n Eigensolver couldn't find a solution. Pose is not updated");
+            printf("Eigensolver couldn't find a solution. Pose is not updated\n");
             return;
         }
 
