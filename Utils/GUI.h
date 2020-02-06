@@ -47,7 +47,7 @@ class GUI
             windowParams.Set("SAMPLE_BUFFERS", 0);
             windowParams.Set("SAMPLES", 0);
 
-            pangolin::CreateWindowAndBind("Main", width, height, windowParams);
+            pangolin::CreateWindowAndBind("StaticFusion", width, height, windowParams);
 
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glPixelStorei(GL_PACK_ALIGNMENT, 1);
