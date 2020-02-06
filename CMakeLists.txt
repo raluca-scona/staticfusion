@@ -76,6 +76,6 @@ set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3")
 
 # Set optimized building:
 IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -mavx")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
