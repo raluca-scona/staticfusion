@@ -1239,7 +1239,7 @@ void StaticFusion::updateGUI() {
     }
 
     //drawing trajectory
-    if(gui->drawTrajectories->Get())
+    if(gui->drawTrajectories->Get() && !poseGraph.empty())
     {
 
     for (int i = 0; i < poseGraph.size()-1; i++) {
