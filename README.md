@@ -59,9 +59,15 @@ There are three executables you can run:
 
 **1) StaticFusion-Camera:** running off of live RGB-D camera feed, assuming an OpenNI compatible camera.
 
-**2) StaticFusion-Datasets:** running using the TUM/Freiburg RGB-D datasets in Rawlog format. You can download these sequeces [here](https://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011). If you would like to perform quantitative evaluation, set ```bool save_results = true``` within the ```StaticFusion-datasets.cpp``` file to save the estimated trajectory to file. This trajectory can then be evaluated here: http://vision.in.tum.de/data/datasets/rgbd-dataset/online_evaluation
+**2) StaticFusion-Datasets:** running using the TUM/Freiburg RGB-D datasets in Rawlog format.
 
-**2) StaticFusion-ImageSequenceAssoc:** running using images stored on disk. The expected format for images in this case is the same as listed [here](https://vision.in.tum.de/data/datasets/rgbd-dataset/tools) if one was to use ```associate.py``` script to associate color and depth images.
+   - run: `./StaticFusion-Datasets ~/Downloads/rawlog_rgbd_dataset_freiburg1_360/rgbd_dataset_freiburg1_360.rawlog`
+   - You can download these sequeces [here](https://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011). If you would like to perform quantitative evaluation, set ```bool save_results = true``` within the ```StaticFusion-datasets.cpp``` file to save the estimated trajectory to file. This trajectory can then be evaluated here: http://vision.in.tum.de/data/datasets/rgbd-dataset/online_evaluation.
+
+**2) StaticFusion-ImageSequenceAssoc:** running using images stored on disk.
+
+   - run: `./StaticFusion-ImageSeqAssoc ~/Downloads/ball`
+   - The expected format for images in this case is the same as listed [here](https://vision.in.tum.de/data/datasets/rgbd-dataset/tools) if one was to use ```associate.py``` script to associate color and depth images.
 
 The organisational structure of the dataset should be:
 

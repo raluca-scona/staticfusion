@@ -906,7 +906,7 @@ void StaticFusion::computeResidualsAgainstPreviousImage(int index) {
     }
 
     T = T * T_odometry;
-    T = T.inverse();
+    T = T.inverse().eval();
 
     int valid_pixels = 0;
 

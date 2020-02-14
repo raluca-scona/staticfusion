@@ -46,8 +46,14 @@
 #include <iostream>
 #include <fstream>
 
-int main()
-{	
+int main(int argc, char* argv[])
+{
+    if(argc<2) {
+        throw std::runtime_error("missing log file");
+    }
+
+    const std::string dir = argv[1];
+
     const unsigned int res_factor = 2;
     StaticFusion staticFusion(res_factor);
 
@@ -77,15 +83,17 @@ int main()
     int im_count = 1;
     const unsigned int decimation = 1;
 
-    std::string dir = "/home/datasets/mariano-ball/";
-
     std::vector<double> timestamps;
     std::vector<std::string> filesDepth;
     std::vector<std::string> filesColor;
 
-    std::string assocFile = "rgbd_assoc.txt";
+    const std::string assocFile = "/rgbd_assoc.txt";
 
     staticFusion.loadAssoc(dir, assocFile, timestamps, filesDepth, filesColor);
+
+    if (filesDepth.empty() || filesColor.empty()) {
+        throw std::runtime_error("no image files");
+    }
 
     cv::Mat weightedImage;
 
