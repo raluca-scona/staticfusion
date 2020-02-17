@@ -144,7 +144,7 @@ void RGBD_Camera::loadFrame(Eigen::MatrixXf &depth_wf, Eigen::MatrixXf &color_wf
     const int width = framergb.getWidth();
 
     if ((framed.getWidth() != framergb.getWidth()) || (framed.getHeight() != framergb.getHeight()))
-        std::cout<<"\n The RGB and the depth frames don't have the same size.";
+        std::cout<<"The RGB and the depth frames don't have the same size." << std::endl;
 
     else
     {

@@ -129,7 +129,7 @@ void StaticFusion::initializeKMeans()
 		else
 		{
 			kmeans.col(l).fill(0.f);
-			//printf("\n label %d is empty from the beginning", l);
+			//printf("label %d is empty from the beginning\n", l);
 		}
 	}
 }

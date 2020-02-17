@@ -112,7 +112,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 {
 	if (dataset_finished)
 	{
-		printf("\n End of the dataset reached. Stop estimating motion!");
+		printf("End of the dataset reached. Stop estimating motion!\n");
 		return;
 	}
 
