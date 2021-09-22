@@ -217,7 +217,7 @@ bool StaticFusion::loadImageFromSequenceAssoc(const std::string &depthFile, cons
 {
     const float norm_factor = 1.f/255.f;
 
-    cv::Mat color = cv::imread(rgbFile.c_str(), CV_LOAD_IMAGE_COLOR);
+    cv::Mat color = cv::imread(rgbFile.c_str(), cv::IMREAD_COLOR);
 
     if (color.data == NULL)
     {
