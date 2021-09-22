@@ -45,9 +45,8 @@
 #define STATICFUSION_H
 
 
-#include <mrpt/system.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils.h>
+#include <mrpt/math/utils.h>
 #include <Eigen/Core>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <opencv2/core/core.hpp>

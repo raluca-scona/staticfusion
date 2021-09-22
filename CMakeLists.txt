@@ -12,10 +12,10 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 MESSAGE(STATUS "CMAKE_MODULE_PATH:   " ${CMAKE_MODULE_PATH})
 
-find_package(Pangolin 0.1 REQUIRED)
+find_package(Pangolin 0.6 REQUIRED)
 
 #Find dependencies (Eigen is included in MRPT)
-find_package(MRPT REQUIRED base obs)
+find_package(MRPT 2 REQUIRED COMPONENTS poses obs)
 find_package(OpenCV REQUIRED)
 find_package(OpenNI2)
 

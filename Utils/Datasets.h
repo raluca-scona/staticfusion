@@ -41,9 +41,9 @@
 **																				**
 *********************************************************************************/
 
-#include <mrpt/utils.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <opencv2/core/core.hpp>
