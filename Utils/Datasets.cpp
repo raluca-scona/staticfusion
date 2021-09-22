@@ -42,9 +42,11 @@
 *********************************************************************************/
 
 #include <Utils/Datasets.h>
+#include <mrpt/img/CImage.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 using namespace std;
 
 
@@ -71,7 +73,7 @@ void Datasets::openRawlog()
 
 	// Set external images directory:
 	const string imgsPath = CRawlog::detectImagesDirectory(filename);
-	utils::CImage::IMAGES_PATH_BASE = imgsPath;
+	CImage::setImagesPathBase(imgsPath);
 
 
 	//					Load ground-truth
@@ -134,7 +136,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
 	obs3D->load();
 	const Eigen::MatrixXf range = obs3D->rangeImage;
-	const utils::CImage int_image =  obs3D->intensityImage;
+	const CImage int_image =  obs3D->intensityImage;
 	const unsigned int height = range.rows();
 	const unsigned int width = range.cols();
 	const unsigned int cols = width/downsample, rows = height/downsample;
