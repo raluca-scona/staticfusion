@@ -120,9 +120,9 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 
 	//Read images
 	//-------------------------------------------------------
-	CObservationPtr alfa = dataset.getAsObservation(rawlog_count);
+	CObservation::Ptr alfa = dataset.getAsObservation(rawlog_count);
 
-	while (!IS_CLASS(alfa, CObservation3DRangeScan))
+	while (!IS_CLASS(*alfa, CObservation3DRangeScan))
 	{
        rawlog_count+=1;
 		if (dataset.size() <= rawlog_count)
@@ -133,7 +133,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 		alfa = dataset.getAsObservation(rawlog_count);
 	}
 
-	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
+	CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
 	const Eigen::MatrixXf range = obs3D->rangeImage;
 	const CImage int_image =  obs3D->intensityImage;
