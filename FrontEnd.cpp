@@ -42,6 +42,7 @@
 *********************************************************************************/
 
 #include <StaticFusion.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace std;
@@ -1071,7 +1072,7 @@ void StaticFusion::computeResidualsAgainstPreviousImage(int index) {
 
 void StaticFusion::runSolver(bool create_image_pyr)
 {
-    CTicTac clock; clock.Tic();
+    mrpt::system::CTicTac clock; clock.Tic();
 
     //Create the image pyramid if it has not been computed yet (now pyramids for depth, colour and cofidence)
     //--------------------------------------------------------------------------------------------------------
