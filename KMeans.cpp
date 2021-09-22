@@ -44,7 +44,6 @@
 #include <StaticFusion.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 using namespace Eigen;
 
@@ -67,7 +66,7 @@ void StaticFusion::initializeKMeans()
     image_level_km = round(log2(width/cols_km));
     const MatrixXf &depth_ref = depthPyr[image_level_km];
     MatrixXi &labels_ref = clusterAllocation[image_level_km];
-	labels_ref.assign(NUM_CLUSTERS);
+	labels_ref.setConstant(NUM_CLUSTERS);
 
 
 	//Initialize from scratch at every iteration
@@ -243,7 +242,7 @@ void StaticFusion::kMeans3DCoord()
 	MatrixXi &labels_ref = clusterAllocation[max_level];
 
 	//Initialize labels
-	labels_ref.assign(NUM_CLUSTERS);
+	labels_ref.setConstant(NUM_CLUSTERS);
 
     //Update distances between the labels
     for (unsigned int l=0; l<NUM_CLUSTERS; l++)
@@ -362,7 +361,7 @@ void StaticFusion::createClustersPyramidUsingKMeans()
         const MatrixXf &xx_old_ref = xxPyr[image_level_km];
         const MatrixXf &yy_old_ref = yyPyr[image_level_km];
 
-		labels_ref.assign(NUM_CLUSTERS);
+		labels_ref.setConstant(NUM_CLUSTERS);
 
 		//Compute belonging to each label
         for (unsigned int u=0; u<cols_km; u++)

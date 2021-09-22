@@ -135,8 +135,8 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 	obs3D->load();
 	const Eigen::MatrixXf range = obs3D->rangeImage;
 	const utils::CImage int_image =  obs3D->intensityImage;
-	const unsigned int height = range.getRowCount();
-	const unsigned int width = range.getColCount();
+	const unsigned int height = range.rows();
+	const unsigned int width = range.cols();
 	const unsigned int cols = width/downsample, rows = height/downsample;
 
     math::CMatrixFloat intensity, r, g, b;
@@ -252,7 +252,7 @@ void Datasets::createResultsFile()
 void Datasets::writeTrajectoryFile(Eigen::Matrix4f currPose, Eigen::MatrixXf &ddt)
 {
 	//Don't take into account those iterations with consecutive equal depth images
-	if (abs(ddt.sumAll()) > 0)
+	if (abs(ddt.sum()) > 0)
 	{
         Eigen::Matrix4f convertedPose = currPose * rotateByZ;
         Eigen::Matrix3f rotationMat = convertedPose.topLeftCorner(3, 3);
