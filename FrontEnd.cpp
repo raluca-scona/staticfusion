@@ -170,8 +170,8 @@ StaticFusion::StaticFusion(unsigned int res_factor)
 
     gui = new GUI(fileName.length() == 0, false);
 
-    gui->confidenceThreshold->Ref().Set(confidence);
-    gui->depthCutoff->Ref().Set(depth_max);
+    gui->confidenceThreshold->Ref()->Set(confidence);
+    gui->depthCutoff->Ref()->Set(depth_max);
 
     reconstruction = new Reconstruction(  std::numeric_limits<int>::max() ,
                                   confidence,

@@ -42,12 +42,7 @@ class GUI
             height = 980;
             panel = 205;
 
-            pangolin::Params windowParams;
-
-            windowParams.Set("SAMPLE_BUFFERS", 0);
-            windowParams.Set("SAMPLES", 0);
-
-            pangolin::CreateWindowAndBind("StaticFusion", width, height, windowParams);
+            pangolin::CreateWindowAndBind("StaticFusion", width, height);
 
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -62,7 +57,7 @@ class GUI
 
             colorProgram = std::shared_ptr<Shader>(loadProgramFromFile("draw_global_surface.vert", "draw_global_surface_phong.frag", "draw_global_surface.geom"));
 
-            pangolin::SetFullscreen(showcaseMode);
+            pangolin::ShowFullscreen(pangolin::TrueFalseToggle{showcaseMode});
 
             glEnable(GL_DEPTH_TEST);
             glDepthMask(GL_TRUE);

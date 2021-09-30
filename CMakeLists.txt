@@ -59,10 +59,6 @@ file(GLOB sf_srcs
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
-# we have to fetch the full path to libraries such that they are properly exported
-get_target_property(pangolin_lib_path pangolin IMPORTED_LOCATION_RELEASE)
-get_target_property(pangolin_intf_libs pangolin INTERFACE_LINK_LIBRARIES)
-
 ADD_LIBRARY(sf_lib
    ${sf_srcs}
    ${sf_utils_srcs}
@@ -73,8 +69,7 @@ ADD_LIBRARY(sf_lib
 TARGET_LINK_LIBRARIES(sf_lib
 	${MRPT_LIBS}
 	${OpenCV_LIBS}
-	${pangolin_lib_path}
-	${pangolin_intf_libs}
+        ${Pangolin_LIBRARIES}
 )
 
 if(OpenNI2_FOUND)
