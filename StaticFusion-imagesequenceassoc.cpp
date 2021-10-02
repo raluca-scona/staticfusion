@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     const std::string dir = argv[1];
 
     const unsigned int res_factor = 2;
-    StaticFusion staticFusion(res_factor);
+    StaticFusion staticFusion;
 
     //Flags
     staticFusion.use_motion_filter = true;

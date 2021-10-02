@@ -55,7 +55,7 @@
 int main(int argc, char* argv[])
 {
     unsigned int res_factor = 2;
-    StaticFusion staticFusion(res_factor);
+    StaticFusion staticFusion;
 
     cv::Mat weightedImage = cv::Mat(Resolution::getInstance().width(), Resolution::getInstance().height(), CV_32F, 0.0);
 

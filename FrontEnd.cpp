@@ -49,18 +49,19 @@ using namespace std;
 using namespace Eigen;
 
 //A strange size for "ws..." due to the fact that some pixels are used twice for odometry and scene flow (hence the 3/2 safety factor)
-StaticFusion::StaticFusion(unsigned int res_factor)
+StaticFusion::StaticFusion(unsigned int width_, unsigned int height_, float fx_, float fy_, float cx_, float cy_)
 {
     //Resolutions and levels
-    rows = 480/res_factor;
-    cols = 640/res_factor;
-    fovh = M_PI*62.5/180.0;
-    fovv = M_PI*48.5/180.0;
-    width = 640/res_factor;
-    height = 480/res_factor;
+    width = width_;
+    height = height_;
+    cols = width;
+    rows = height;
     ctf_levels = log2(cols/40) + 2;
-    float fx = 0.5 * cols / tan( fovh * 0.5);
-    float fy = 0.5 * rows / tan( fovv * 0.5);
+    fovh = 2 * atan2(width,2 * fx_);
+    fovv = 2 * atan2(height,2 * fy_);
+
+    Resolution::getInstance(cols, rows);
+    Intrinsics::getInstance(fx_, fy_, cx_, cy_);
 
     //Solver
     k_photometric_res = 0.15f;
@@ -161,8 +162,6 @@ StaticFusion::StaticFusion(unsigned int res_factor)
     depth_mm = cv::Mat(height, width, CV_16U, 0.0);
     color_full = cv::Mat(height, width, CV_8UC3, cv::Scalar(0,0,0));
 
-    Resolution::getInstance(cols, rows);
-    Intrinsics::getInstance(fx, fy, cols/2, rows/2);
 
     confidence = 0.25f;
     depth_max = 4.5f;

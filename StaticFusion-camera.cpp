@@ -52,7 +52,7 @@
 int main()
 {	
     unsigned int res_factor = 2;
-    StaticFusion staticFusion(res_factor);
+    StaticFusion staticFusion;
 
     //Flags
     staticFusion.use_motion_filter = true;

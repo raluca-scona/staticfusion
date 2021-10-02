@@ -121,7 +121,7 @@ public:
     unsigned int image_level_km;                //Aux variables
 
 
-    StaticFusion(unsigned int res_factor);
+    StaticFusion(unsigned int width = 640 / 2, unsigned int height = 480 / 2, float fx =  527.34367917 / 2, float fy = 532.78024387 / 2, float cx = 320 / 2., float cy = 240 / 2.);
     void createImagePyramid(bool old_im);					//Create image pyramids (intensity and depth)
     void warpImagesAccurateInverse();
     void calculateCoord();						//Compute so-called "intermediate coordinates", related to a more precise linearization of optical and range flow
