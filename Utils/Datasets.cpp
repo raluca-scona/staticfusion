@@ -101,7 +101,7 @@ void Datasets::openRawlog()
 	{
 		f_gt >> gt_matrix(k,0); f_gt >> gt_matrix(k,1); f_gt >> gt_matrix(k,2); f_gt >> gt_matrix(k,3);
 		f_gt >> gt_matrix(k,4); f_gt >> gt_matrix(k,5); f_gt >> gt_matrix(k,6); f_gt >> gt_matrix(k,7);
-		f_gt.ignore(10,'\n');	
+		f_gt.ignore(10,'\n');
 	}
 
 	f_gt.close();
@@ -209,7 +209,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 		if (last_gt_row >= gt_matrix.rows())
 		{
 			dataset_finished = true;
-			return;		
+			return;
 		}
 	}
 
@@ -250,14 +250,14 @@ void Datasets::createResultsFile()
 }
 
 void Datasets::writeTrajectoryFile(Eigen::Matrix4f currPose, Eigen::MatrixXf &ddt)
-{	
+{
 	//Don't take into account those iterations with consecutive equal depth images
 	if (abs(ddt.sumAll()) > 0)
-	{		
+	{
         Eigen::Matrix4f convertedPose = currPose * rotateByZ;
         Eigen::Matrix3f rotationMat = convertedPose.topLeftCorner(3, 3);
         Eigen::Quaternionf currQuat = Eigen::Quaternionf(rotationMat);
-	
+
 		char aux[24];
 		sprintf(aux,"%.04f", timestamp_obs);
         f_res << aux << " " << convertedPose(0, 3) << " " << convertedPose(1, 3) << " " << convertedPose(2, 3) << " ";

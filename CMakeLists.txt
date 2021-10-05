@@ -46,9 +46,9 @@ endif()
 
 file(GLOB sf_shader_srcs Shaders/*.cpp)
 
-file(GLOB sf_srcs 
-	Reconstruction.cpp 
-	GlobalModel.cpp 
+file(GLOB sf_srcs
+	Reconstruction.cpp
+	GlobalModel.cpp
 	IndexMap.cpp
 	IndexMap.h
 	KMeans.cpp
@@ -67,9 +67,9 @@ ADD_LIBRARY(sf_lib
    ${sf_srcs}
    ${sf_utils_srcs}
    ${sf_shader_srcs}
-   ${sf_containers}	
+   ${sf_containers}
 )
-	
+
 TARGET_LINK_LIBRARIES(sf_lib
 	${MRPT_LIBS}
 	${OpenCV_LIBS}
@@ -80,23 +80,23 @@ TARGET_LINK_LIBRARIES(sf_lib
 if(OpenNI2_FOUND)
     TARGET_LINK_LIBRARIES(sf_lib ${OpenNI2_LIBRARY})
 endif()
-		
+
 #To run online with an RGB-D camera
 if(OpenNI2_FOUND)
     ADD_EXECUTABLE(StaticFusion-Camera 	StaticFusion-camera.cpp)
     TARGET_LINK_LIBRARIES(StaticFusion-Camera 	sf_lib)
 endif()
-		
-#To test it with the TUM dataset		
-ADD_EXECUTABLE(StaticFusion-Datasets 	StaticFusion-datasets.cpp)
-TARGET_LINK_LIBRARIES(StaticFusion-Datasets 	sf_lib)	
 
-#To test it with pre-recorded RGB-D sequences		
+#To test it with the TUM dataset
+ADD_EXECUTABLE(StaticFusion-Datasets 	StaticFusion-datasets.cpp)
+TARGET_LINK_LIBRARIES(StaticFusion-Datasets 	sf_lib)
+
+#To test it with pre-recorded RGB-D sequences
 ADD_EXECUTABLE(StaticFusion-ImageSeqAssoc 	StaticFusion-imagesequenceassoc.cpp)
 TARGET_LINK_LIBRARIES(StaticFusion-ImageSeqAssoc 	sf_lib)
 
 add_definitions(-DSHADER_DIR="${sfusion_SHADER_DIR}")
-		
+
 set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3")
 
 # Set optimized building:

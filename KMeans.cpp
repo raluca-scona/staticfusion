@@ -121,7 +121,7 @@ void StaticFusion::initializeKMeans()
 		if (size_label > 0)
 		{
 			std::nth_element(depth_sorted[l].begin(), depth_sorted[l].begin() + med_pos, depth_sorted[l].end());
-					
+
 			kmeans(0,l) = depth_sorted[l].at(med_pos);
 			kmeans(1,l) = (u_label[l]-disp_u_i)*kmeans(0,l)*inv_f_i;
 			kmeans(2,l) = (v_label[l]-disp_v_i)*kmeans(0,l)*inv_f_i;
@@ -151,7 +151,7 @@ void StaticFusion::kMeans3DCoord()
 	initializeKMeans();
 
 
-    //                                      Iterate 
+    //                                      Iterate
     //=======================================================================================
     vector<vector<IndexAndDistance> > cluster_distances(NUM_CLUSTERS, vector<IndexAndDistance>(NUM_CLUSTERS));
 
@@ -313,7 +313,7 @@ void StaticFusion::computeRegionConnectivity()
 		}
 
     for (unsigned int u=0; u<cols-1; u++)
-        for (unsigned int v=0; v<rows-1; v++)					
+        for (unsigned int v=0; v<rows-1; v++)
             if (depth_ref(v,u) != 0.f)
             {
                 //Detect change in the labelling (v+1,u)
@@ -348,7 +348,7 @@ void StaticFusion::createClustersPyramidUsingKMeans()
 	for (unsigned int la=0; la<NUM_CLUSTERS; la++)
 		for (unsigned int lb=la+1; lb<NUM_CLUSTERS; lb++)
 			kmeans_dist(la,lb) = (kmeans.col(la) - kmeans.col(lb)).squaredNorm();
-	
+
 	//Generate levels
     for (unsigned int i = 2; i<ctf_levels; i++)
     {
@@ -363,12 +363,12 @@ void StaticFusion::createClustersPyramidUsingKMeans()
         const MatrixXf &yy_old_ref = yyPyr[image_level_km];
 
 		labels_ref.assign(NUM_CLUSTERS);
-	
+
 		//Compute belonging to each label
         for (unsigned int u=0; u<cols_km; u++)
             for (unsigned int v=0; v<rows_km; v++)
 				if (depth_old_ref(v,u) != 0.f)
-				{			
+				{
 					unsigned int label = 0;
 					const Vector3f p(depth_old_ref(v,u), xx_old_ref(v,u), yy_old_ref(v,u));
 					float min_dist = (kmeans.col(0) - p).squaredNorm();
