@@ -47,6 +47,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::img;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -135,7 +136,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 
 	CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
-	const Eigen::MatrixXf range = obs3D->rangeImage;
+	const CMatrix_u16 range = obs3D->rangeImage;
 	const CImage int_image =  obs3D->intensityImage;
 	const unsigned int height = range.rows();
 	const unsigned int width = range.cols();
@@ -176,7 +177,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
     for (unsigned int j = 0; j<cols; j++)
         for (unsigned int i = 0; i<rows; i++)
         {
-            const float z = range(height - downsample*i -1, width - downsample*j -1);
+            const float z = range(height - downsample*i -1, width - downsample*j -1) * obs3D->rangeUnits;
             if (z < max_distance) {
                 depth_wf(i,j) = int (z * 1000.0) / 1000.0;
                 depth_full.at<unsigned short>(i,j) = z * 1000.0;
