@@ -106,7 +106,7 @@ class GUI
             }
 
             confidenceThreshold = new pangolin::Var<float>("ui.Confidence threshold", 0.0, 0.0, 1.0);
-            depthCutoff = new pangolin::Var<float>("ui.Depth cutoff", 3.0, 0.0, 12.0);
+            depthCutoff = new pangolin::Var<float>("ui.Depth cutoff", 3.0, 0.0, 20.0);
 
             followPose = new pangolin::Var<bool>("ui.Follow pose", true, true);
             drawRawCloud = new pangolin::Var<bool>("ui.Draw raw", false, true);

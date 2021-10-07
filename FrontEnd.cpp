@@ -164,7 +164,7 @@ StaticFusion::StaticFusion(unsigned int width_, unsigned int height_, float fx_,
 
 
     confidence = 0.25f;
-    depth_max = 4.5f;
+    depth_max = 12.0f;
     std::string fileName = "sf-mesh";
 
     gui = new GUI(fileName.length() == 0, false);
