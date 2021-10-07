@@ -482,6 +482,22 @@ void Reconstruction::savePly()
     }
 
     f.close();
+
+    // save poses
+    {
+      // export poses as (time, px, py, pz, qx, qy, qz, qw)
+      const std::string pose_filename = saveFilename + ".txt";
+      std::ofstream fs;
+      fs.open(pose_filename.c_str());
+      for (const auto &[i, se3] : poseGraph) {
+        const Eigen::Isometry3f T(se3.matrix());
+        fs << poseLogTimes.at(i-1) << " ";
+        fs << T.translation().transpose() << " ";
+        fs << Eigen::Quaternionf(T.rotation()).coeffs().transpose();
+        fs << std::endl;
+      }
+      fs.close();
+    }
 }
 
 Eigen::Vector3f Reconstruction::rodrigues2(const Eigen::Matrix3f& matrix)
