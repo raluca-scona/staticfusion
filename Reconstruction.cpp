@@ -485,12 +485,15 @@ void Reconstruction::savePly()
 
     // save poses
     {
+      // convert from left-hand (RDF) to right-hand (RUF) camera coordinate system
+      const Eigen::DiagonalMatrix<float, 4> P(Eigen::Vector4f(1, -1, 1, 1));
+
       // export poses as (time, px, py, pz, qx, qy, qz, qw)
       const std::string pose_filename = saveFilename + ".txt";
       std::ofstream fs;
       fs.open(pose_filename.c_str());
       for (const auto &[i, se3] : poseGraph) {
-        const Eigen::Isometry3f T(se3.matrix());
+        const Eigen::Isometry3f T(P.inverse() * se3.matrix() * P);
         fs << poseLogTimes.at(i-1) << " ";
         fs << T.translation().transpose() << " ";
         fs << Eigen::Quaternionf(T.rotation()).coeffs().transpose();
