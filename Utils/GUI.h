@@ -42,12 +42,7 @@ class GUI
             height = 980;
             panel = 205;
 
-            pangolin::Params windowParams;
-
-            windowParams.Set("SAMPLE_BUFFERS", 0);
-            windowParams.Set("SAMPLES", 0);
-
-            pangolin::CreateWindowAndBind("StaticFusion", width, height, windowParams);
+            pangolin::CreateWindowAndBind("StaticFusion", width, height);
 
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -62,7 +57,7 @@ class GUI
 
             colorProgram = std::shared_ptr<Shader>(loadProgramFromFile("draw_global_surface.vert", "draw_global_surface_phong.frag", "draw_global_surface.geom"));
 
-            pangolin::SetFullscreen(showcaseMode);
+            pangolin::ShowFullscreen(pangolin::TrueFalseToggle{showcaseMode});
 
             glEnable(GL_DEPTH_TEST);
             glDepthMask(GL_TRUE);
@@ -111,7 +106,7 @@ class GUI
             }
 
             confidenceThreshold = new pangolin::Var<float>("ui.Confidence threshold", 0.0, 0.0, 1.0);
-            depthCutoff = new pangolin::Var<float>("ui.Depth cutoff", 3.0, 0.0, 12.0);
+            depthCutoff = new pangolin::Var<float>("ui.Depth cutoff", 3.0, 0.0, 20.0);
 
             followPose = new pangolin::Var<bool>("ui.Follow pose", true, true);
             drawRawCloud = new pangolin::Var<bool>("ui.Draw raw", false, true);

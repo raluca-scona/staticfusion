@@ -45,9 +45,8 @@
 #define STATICFUSION_H
 
 
-#include <mrpt/system.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils.h>
+#include <mrpt/math/utils.h>
 #include <Eigen/Core>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <opencv2/core/core.hpp>
@@ -122,7 +121,7 @@ public:
     unsigned int image_level_km;                //Aux variables
 
 
-    StaticFusion(unsigned int res_factor);
+    StaticFusion(unsigned int width = 640 / 2, unsigned int height = 480 / 2, float fx =  527.34367917 / 2, float fy = 532.78024387 / 2, float cx = 320 / 2., float cy = 240 / 2.);
     void createImagePyramid(bool old_im);					//Create image pyramids (intensity and depth)
     void warpImagesAccurateInverse();
     void calculateCoord();						//Compute so-called "intermediate coordinates", related to a more precise linearization of optical and range flow
@@ -141,8 +140,8 @@ public:
     float previous_speed_eig_weight;
 	unsigned int max_iter_irls;				//Max number of iterations for the IRLS solver
 	unsigned int max_iter_per_level;		//Max number of complete iterations for every level of the pyramid
-	float k_photometric_res;				//Weight of the photometric residuals (against geometric ones)	
-	float irls_delta_threshold;				//Convergence threshold for the IRLS solver (change in the solution)	
+	float k_photometric_res;				//Weight of the photometric residuals (against geometric ones)
+	float irls_delta_threshold;				//Convergence threshold for the IRLS solver (change in the solution)
     float kc_Cauchy, kb;
     std::vector<std::pair<int,int>> validPixels;     //Store indices of the pixels used for the solver
 
@@ -151,14 +150,14 @@ public:
     void filterEstimateAndComputeT(Vector6f &twist);
 
     //					Geometric clustering
-    //--------------------------------------------------------------   
+    //--------------------------------------------------------------
     std::vector<Eigen::MatrixXi> clusterAllocation;											//Integer non-smooth scoring
     Eigen::Matrix<float, 3, NUM_CLUSTERS> kmeans;										//Centers of the KMeans clusters
     bool connectivity[NUM_CLUSTERS][NUM_CLUSTERS];										//Connectivity between the clusters
 
     void createClustersPyramidUsingKMeans();				//Create the label pyramid
 	void initializeKMeans();							//Initialize KMeans by uniformly dividing the image plane
-	void kMeans3DCoord();								//Segment the scene in clusters using the 3D coordinates of the points				
+	void kMeans3DCoord();								//Segment the scene in clusters using the 3D coordinates of the points
     void computeRegionConnectivity();					//Compute connectivity graph (which cluster is contiguous to which)
 
 	//						Static-Dynamic segmentation

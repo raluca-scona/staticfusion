@@ -44,7 +44,6 @@
 #include <StaticFusion.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 using namespace Eigen;
 
@@ -161,8 +160,10 @@ void StaticFusion::solveSegmIteration(const Array<float, NUM_CLUSTERS, 1> &aver_
 
 
     //Build AtA and AtB
-    AtA_seg.multiply_AtA(A_seg);
-    AtB_seg.multiply_AtB(A_seg,B_seg);
+    // this = A^T * A
+    AtA_seg = A_seg.adjoint()*A_seg;
+    // this = A^T * B
+    AtB_seg = A_seg.adjoint()*B_seg;
 
     //Solve and constrain to [-1,2] (I permit more than [0,1] to help regularizers have a stronger effect)
     b_segm = AtA_seg.ldlt().solve(AtB_seg);

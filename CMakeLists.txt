@@ -12,10 +12,10 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 MESSAGE(STATUS "CMAKE_MODULE_PATH:   " ${CMAKE_MODULE_PATH})
 
-find_package(Pangolin 0.1 REQUIRED)
+find_package(Pangolin 0.6 REQUIRED)
 
 #Find dependencies (Eigen is included in MRPT)
-find_package(MRPT REQUIRED base obs)
+find_package(MRPT 2 REQUIRED COMPONENTS poses obs)
 find_package(OpenCV REQUIRED)
 find_package(OpenNI2)
 
@@ -46,9 +46,9 @@ endif()
 
 file(GLOB sf_shader_srcs Shaders/*.cpp)
 
-file(GLOB sf_srcs 
-	Reconstruction.cpp 
-	GlobalModel.cpp 
+file(GLOB sf_srcs
+	Reconstruction.cpp
+	GlobalModel.cpp
 	IndexMap.cpp
 	IndexMap.h
 	KMeans.cpp
@@ -59,44 +59,39 @@ file(GLOB sf_srcs
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
-# we have to fetch the full path to libraries such that they are properly exported
-get_target_property(pangolin_lib_path pangolin IMPORTED_LOCATION_RELEASE)
-get_target_property(pangolin_intf_libs pangolin INTERFACE_LINK_LIBRARIES)
-
 ADD_LIBRARY(sf_lib
    ${sf_srcs}
    ${sf_utils_srcs}
    ${sf_shader_srcs}
-   ${sf_containers}	
+   ${sf_containers}
 )
-	
+
 TARGET_LINK_LIBRARIES(sf_lib
 	${MRPT_LIBS}
 	${OpenCV_LIBS}
-	${pangolin_lib_path}
-	${pangolin_intf_libs}
+        ${Pangolin_LIBRARIES}
 )
 
 if(OpenNI2_FOUND)
     TARGET_LINK_LIBRARIES(sf_lib ${OpenNI2_LIBRARY})
 endif()
-		
+
 #To run online with an RGB-D camera
 if(OpenNI2_FOUND)
     ADD_EXECUTABLE(StaticFusion-Camera 	StaticFusion-camera.cpp)
     TARGET_LINK_LIBRARIES(StaticFusion-Camera 	sf_lib)
 endif()
-		
-#To test it with the TUM dataset		
-ADD_EXECUTABLE(StaticFusion-Datasets 	StaticFusion-datasets.cpp)
-TARGET_LINK_LIBRARIES(StaticFusion-Datasets 	sf_lib)	
 
-#To test it with pre-recorded RGB-D sequences		
+#To test it with the TUM dataset
+ADD_EXECUTABLE(StaticFusion-Datasets 	StaticFusion-datasets.cpp)
+TARGET_LINK_LIBRARIES(StaticFusion-Datasets 	sf_lib)
+
+#To test it with pre-recorded RGB-D sequences
 ADD_EXECUTABLE(StaticFusion-ImageSeqAssoc 	StaticFusion-imagesequenceassoc.cpp)
 TARGET_LINK_LIBRARIES(StaticFusion-ImageSeqAssoc 	sf_lib)
 
 add_definitions(-DSHADER_DIR="${sfusion_SHADER_DIR}")
-		
+
 set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3")
 
 # Set optimized building:

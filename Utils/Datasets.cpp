@@ -42,9 +42,12 @@
 *********************************************************************************/
 
 #include <Utils/Datasets.h>
+#include <mrpt/img/CImage.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::img;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -71,7 +74,7 @@ void Datasets::openRawlog()
 
 	// Set external images directory:
 	const string imgsPath = CRawlog::detectImagesDirectory(filename);
-	utils::CImage::IMAGES_PATH_BASE = imgsPath;
+	CImage::setImagesPathBase(imgsPath);
 
 
 	//					Load ground-truth
@@ -101,7 +104,7 @@ void Datasets::openRawlog()
 	{
 		f_gt >> gt_matrix(k,0); f_gt >> gt_matrix(k,1); f_gt >> gt_matrix(k,2); f_gt >> gt_matrix(k,3);
 		f_gt >> gt_matrix(k,4); f_gt >> gt_matrix(k,5); f_gt >> gt_matrix(k,6); f_gt >> gt_matrix(k,7);
-		f_gt.ignore(10,'\n');	
+		f_gt.ignore(10,'\n');
 	}
 
 	f_gt.close();
@@ -118,9 +121,9 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 
 	//Read images
 	//-------------------------------------------------------
-	CObservationPtr alfa = dataset.getAsObservation(rawlog_count);
+	CObservation::Ptr alfa = dataset.getAsObservation(rawlog_count);
 
-	while (!IS_CLASS(alfa, CObservation3DRangeScan))
+	while (!IS_CLASS(*alfa, CObservation3DRangeScan))
 	{
        rawlog_count+=1;
 		if (dataset.size() <= rawlog_count)
@@ -131,12 +134,12 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 		alfa = dataset.getAsObservation(rawlog_count);
 	}
 
-	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
+	CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
-	const Eigen::MatrixXf range = obs3D->rangeImage;
-	const utils::CImage int_image =  obs3D->intensityImage;
-	const unsigned int height = range.getRowCount();
-	const unsigned int width = range.getColCount();
+	const CMatrix_u16 range = obs3D->rangeImage;
+	const CImage int_image =  obs3D->intensityImage;
+	const unsigned int height = range.rows();
+	const unsigned int width = range.cols();
 	const unsigned int cols = width/downsample, rows = height/downsample;
 
     math::CMatrixFloat intensity, r, g, b;
@@ -174,7 +177,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
     for (unsigned int j = 0; j<cols; j++)
         for (unsigned int i = 0; i<rows; i++)
         {
-            const float z = range(height - downsample*i -1, width - downsample*j -1);
+            const float z = range(height - downsample*i -1, width - downsample*j -1) * obs3D->rangeUnits;
             if (z < max_distance) {
                 depth_wf(i,j) = int (z * 1000.0) / 1000.0;
                 depth_full.at<unsigned short>(i,j) = z * 1000.0;
@@ -209,7 +212,7 @@ void Datasets::loadFrameAndPoseFromDataset(Eigen::MatrixXf &depth_wf, Eigen::Mat
 		if (last_gt_row >= gt_matrix.rows())
 		{
 			dataset_finished = true;
-			return;		
+			return;
 		}
 	}
 
@@ -250,14 +253,14 @@ void Datasets::createResultsFile()
 }
 
 void Datasets::writeTrajectoryFile(Eigen::Matrix4f currPose, Eigen::MatrixXf &ddt)
-{	
+{
 	//Don't take into account those iterations with consecutive equal depth images
-	if (abs(ddt.sumAll()) > 0)
-	{		
+	if (abs(ddt.sum()) > 0)
+	{
         Eigen::Matrix4f convertedPose = currPose * rotateByZ;
         Eigen::Matrix3f rotationMat = convertedPose.topLeftCorner(3, 3);
         Eigen::Quaternionf currQuat = Eigen::Quaternionf(rotationMat);
-	
+
 		char aux[24];
 		sprintf(aux,"%.04f", timestamp_obs);
         f_res << aux << " " << convertedPose(0, 3) << " " << convertedPose(1, 3) << " " << convertedPose(2, 3) << " ";

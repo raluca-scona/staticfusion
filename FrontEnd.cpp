@@ -42,25 +42,26 @@
 *********************************************************************************/
 
 #include <StaticFusion.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 using namespace Eigen;
 
 //A strange size for "ws..." due to the fact that some pixels are used twice for odometry and scene flow (hence the 3/2 safety factor)
-StaticFusion::StaticFusion(unsigned int res_factor)
+StaticFusion::StaticFusion(unsigned int width_, unsigned int height_, float fx_, float fy_, float cx_, float cy_)
 {
     //Resolutions and levels
-    rows = 480/res_factor;
-    cols = 640/res_factor;
-    fovh = M_PI*62.5/180.0;
-    fovv = M_PI*48.5/180.0;
-    width = 640/res_factor;
-    height = 480/res_factor;
+    width = width_;
+    height = height_;
+    cols = width;
+    rows = height;
     ctf_levels = log2(cols/40) + 2;
-    float fx = 0.5 * cols / tan( fovh * 0.5);
-    float fy = 0.5 * rows / tan( fovv * 0.5);
+    fovh = 2 * atan2(width,2 * fx_);
+    fovv = 2 * atan2(height,2 * fy_);
+
+    Resolution::getInstance(cols, rows);
+    Intrinsics::getInstance(fx_, fy_, cx_, cy_);
 
     //Solver
     k_photometric_res = 0.15f;
@@ -81,17 +82,17 @@ StaticFusion::StaticFusion(unsigned int res_factor)
     twist_odometry_old.fill(0.f);
 
     //Resize matrices which are not in a "pyramid"
-    depthCurrent.setSize(height,width);
-    depthPrediction.setSize(height,width);
-    intensityCurrent.setSize(height,width);
-    intensityPrediction.setSize(height,width);
+    depthCurrent.resize(height,width);
+    depthPrediction.resize(height,width);
+    intensityCurrent.resize(height,width);
+    intensityPrediction.resize(height,width);
 
     dct.resize(rows,cols); ddt.resize(rows,cols);
     dcu.resize(rows,cols); ddu.resize(rows,cols);
     dcv.resize(rows,cols); ddv.resize(rows,cols);
     Null.resize(rows,cols);
-    weights_c.setSize(rows,cols);
-    weights_d.setSize(rows,cols);
+    weights_c.resize(rows,cols);
+    weights_d.resize(rows,cols);
 
     intensityBuffer.resize(bufferLength);
     depthBuffer.resize(bufferLength);
@@ -116,8 +117,8 @@ StaticFusion::StaticFusion(unsigned int res_factor)
     xxWarpedPyr.resize(pyr_levels);
     yyWarpedPyr.resize(pyr_levels);
     clusterAllocation.resize(pyr_levels);
-    xxBuffer.setSize(height, width); yyBuffer.setSize(height, width);
-    xxBuffer.assign(0.f); yyBuffer.assign(0.f);
+    xxBuffer.resize(height, width); yyBuffer.resize(height, width);
+    xxBuffer.setZero(); yyBuffer.setZero();
 
     for (unsigned int i = 0; i<pyr_levels; i++)
     {
@@ -125,11 +126,11 @@ StaticFusion::StaticFusion(unsigned int res_factor)
         cols_i = width/s; rows_i = height/s;
         intensityPyr[i].resize(rows_i, cols_i); intensityPredPyr[i].resize(rows_i, cols_i); intensityInterPyr[i].resize(rows_i, cols_i);
         depthPyr[i].resize(rows_i, cols_i); depthInterPyr[i].resize(rows_i, cols_i); depthPredPyr[i].resize(rows_i, cols_i);
-        depthPyr[i].assign(0.f); depthPredPyr[i].assign(0.f);
+        depthPyr[i].setZero(); depthPredPyr[i].setZero();
         xxPyr[i].resize(rows_i, cols_i); xxInterPyr[i].resize(rows_i, cols_i); xxPredPyr[i].resize(rows_i, cols_i);
-        xxPyr[i].assign(0.f); xxPredPyr[i].assign(0.f);
+        xxPyr[i].setZero(); xxPredPyr[i].setZero();
         yyPyr[i].resize(rows_i, cols_i); yyInterPyr[i].resize(rows_i, cols_i); yyPredPyr[i].resize(rows_i, cols_i);
-        yyPyr[i].assign(0.f); yyPredPyr[i].assign(0.f);
+        yyPyr[i].setZero(); yyPredPyr[i].setZero();
 
         if (cols_i <= cols)
         {
@@ -138,7 +139,7 @@ StaticFusion::StaticFusion(unsigned int res_factor)
             xxWarpedPyr[i].resize(rows_i,cols_i);
             yyWarpedPyr[i].resize(rows_i,cols_i);
             clusterAllocation[i].resize(rows_i, cols_i);
-            clusterAllocation[i].assign(0);
+            clusterAllocation[i].setZero();
         }
     }
 
@@ -151,7 +152,7 @@ StaticFusion::StaticFusion(unsigned int res_factor)
 
     //              Labels (Initialized to uncertain)
     //=========================================================
-    b_segm_perpixel.setSize(rows,cols);
+    b_segm_perpixel.resize(rows,cols);
     b_segm_perpixel.fill(0.5f);
     b_segm.fill(0.5f);
 
@@ -161,17 +162,15 @@ StaticFusion::StaticFusion(unsigned int res_factor)
     depth_mm = cv::Mat(height, width, CV_16U, 0.0);
     color_full = cv::Mat(height, width, CV_8UC3, cv::Scalar(0,0,0));
 
-    Resolution::getInstance(cols, rows);
-    Intrinsics::getInstance(fx, fy, cols/2, rows/2);
 
     confidence = 0.25f;
-    depth_max = 4.5f;
+    depth_max = 12.0f;
     std::string fileName = "sf-mesh";
 
     gui = new GUI(fileName.length() == 0, false);
 
-    gui->confidenceThreshold->Ref().Set(confidence);
-    gui->depthCutoff->Ref().Set(depth_max);
+    gui->confidenceThreshold->Ref()->Set(confidence);
+    gui->depthCutoff->Ref()->Set(depth_max);
 
     reconstruction = new Reconstruction(  std::numeric_limits<int>::max() ,
                                   confidence,
@@ -217,7 +216,7 @@ bool StaticFusion::loadImageFromSequenceAssoc(const std::string &depthFile, cons
 {
     const float norm_factor = 1.f/255.f;
 
-    cv::Mat color = cv::imread(rgbFile.c_str(), CV_LOAD_IMAGE_COLOR);
+    cv::Mat color = cv::imread(rgbFile.c_str(), cv::IMREAD_COLOR);
 
     if (color.data == NULL)
     {
@@ -350,7 +349,7 @@ void StaticFusion::createImagePyramid(bool old_im)
                         const Matrix2f depth_block = depth_prev.block<2,2>(v2,u2);
                         const Matrix2f intensity_block = intensity_prev.block<2,2>(v2,u2);
 
-                        intensity_here(v,u) = 0.25f*intensity_block.sumAll();
+                        intensity_here(v,u) = 0.25f*intensity_block.sum();
 
                         float new_d = 0.f;
                         unsigned int cont = 0;
@@ -480,8 +479,8 @@ void StaticFusion::calculateDerivatives()
 
 void StaticFusion::computeWeights()
 {
-    weights_c.assign(0.f);
-    weights_d.assign(0.f);
+    weights_c.setZero();
+    weights_d.setZero();
 
     //Parameters for error_linearization
     const float kduvt_c = 10.f;
@@ -502,10 +501,10 @@ void StaticFusion::computeWeights()
         weights_d(v,u) = sqrtf(1.f/(error_m_d + error_l_d));
     }
 
-    const float inv_max_c = 1.f/weights_c.maximum();
+    const float inv_max_c = 1.f/weights_c.maxCoeff();
     weights_c = inv_max_c*weights_c;
 
-    const float inv_max_d = 1.f/weights_d.maximum();
+    const float inv_max_d = 1.f/weights_d.maxCoeff();
     weights_d = inv_max_d*weights_d;
 }
 
@@ -524,12 +523,12 @@ void StaticFusion::solveOdometryAndSegmJoint()
 
     Matrix<float, Dynamic, Dynamic, ColMajor> A(2*validPixels.size(),6);
     Matrix<float, Dynamic, Dynamic, ColMajor> B(2*validPixels.size(),1);
-    A.assign(0.f);
+    A.setZero();
     Matrix<float, Dynamic, Dynamic, ColMajor> Aw(2*validPixels.size(),6);
     Matrix<float, Dynamic, Dynamic, ColMajor> Bw(2*validPixels.size(),1);
-    Aw.assign(0.f);
+    Aw.setZero();
     Vector6f Var;
-    Var.assign(0.f);
+    Var.setZero();
 
 
     //Initialize jacobians
@@ -587,7 +586,7 @@ void StaticFusion::solveOdometryAndSegmJoint()
 
     MatrixXf AtA, AtB;
     VectorXf res = -B;
-    float aver_res = res.cwiseAbs().sumAll() / res.size();
+    float aver_res = res.cwiseAbs().sum() / res.size();
 
 
     //Solve iterative reweighted least squares
@@ -611,7 +610,7 @@ void StaticFusion::solveOdometryAndSegmJoint()
     for (unsigned int k=1; k<=max_iter_irls; k++)
     {
         //Update the Cauchy parameter
-        //const float aver_res = res.cwiseAbs().sumAll() / res.size();
+        //const float aver_res = res.cwiseAbs().sum() / res.size();
         const float inv_c_Cauchy = 1.f/(kc_Cauchy*aver_res);
 
         //Compute the new weights (Cauchy and segmentation)
@@ -637,8 +636,10 @@ void StaticFusion::solveOdometryAndSegmJoint()
         }
 
         //Solve the linear system of equations using a minimum least squares method
-        AtA.multiply_AtA(Aw);
-        AtB.multiply_AtB(Aw,Bw);
+        // this = A^T * A
+        AtA = Aw.adjoint()*Aw;
+        // this = A^T * B
+        AtB = Aw.adjoint()*Bw;
         Var = AtA.ldlt().solve(AtB);
         //res = A*Var - B;
         res = -B;
@@ -663,7 +664,7 @@ void StaticFusion::solveOdometryAndSegmJoint()
             num_pix_label(labels_ref(v,u))++;
         }
 
-        aver_res = aver_res_label.matrix().sumAll()/float(2*validPixels.size());
+        aver_res = aver_res_label.matrix().sum()/float(2*validPixels.size());
         aver_res_label /= (2*num_pix_label).cast<float>();
 
 
@@ -788,11 +789,11 @@ void StaticFusion::warpImagesAccurateInverse()
     const MatrixXf &intensity_ref = intensityPredPyr[image_level];
     const MatrixXf &xx_ref = xxPredPyr[image_level];
     const MatrixXf &yy_ref = yyPredPyr[image_level];
-    depth_warped_ref.assign(0.f);
-    intensity_warped_ref.assign(0.f);
+    depth_warped_ref.setZero();
+    intensity_warped_ref.setZero();
 
     //Aux variables
-    MatrixXf wacu(rows_i,cols_i); wacu.assign(0.f);
+    MatrixXf wacu(rows_i,cols_i); wacu.setZero();
     const int cols_lim = 100*(cols_i-1);
     const int rows_lim = 100*(rows_i-1);
 
@@ -938,7 +939,7 @@ void StaticFusion::computeResidualsAgainstPreviousImage(int index) {
     const MatrixXi labels_ref = clusterAllocation[0].replicate(1, 1);
 
     //Aux variables
-    MatrixXf wacu(rows,cols); wacu.assign(0.f);
+    MatrixXf wacu(rows,cols); wacu.setZero();
     const int cols_lim = 100*(cols-1);
     const int rows_lim = 100*(rows-1);
 
@@ -1070,7 +1071,7 @@ void StaticFusion::computeResidualsAgainstPreviousImage(int index) {
 
 void StaticFusion::runSolver(bool create_image_pyr)
 {
-    CTicTac clock; clock.Tic();
+    mrpt::system::CTicTac clock; clock.Tic();
 
     //Create the image pyramid if it has not been computed yet (now pyramids for depth, colour and cofidence)
     //--------------------------------------------------------------------------------------------------------
@@ -1132,16 +1133,15 @@ void StaticFusion::runSolver(bool create_image_pyr)
         }
 
     cam_oldpose = cam_pose;
-    math::CMatrixDouble44 aux_acu = T_odometry;
-    poses::CPose3D pose_aux(aux_acu); //mrpt representation of local odometry
+    poses::CPose3D pose_aux(math::CMatrixDouble44{T_odometry}); //mrpt representation of local odometry
     cam_pose = cam_pose + pose_aux; //global pose of the camera
 
     //Transform the local velocity to the new reference frame after motion
     //---------------------------------------------------------------------
     math::CMatrixDouble33 inv_trans;
     pose_aux.getRotationMatrix(inv_trans); //incremental rotation
-    twist_odometry_old.topRows<3>() = inv_trans.inverse().cast<float>()*twist_odometry.topRows(3);
-    twist_odometry_old.bottomRows<3>() = inv_trans.inverse().cast<float>()*twist_odometry.bottomRows(3);
+    twist_odometry_old.topRows<3>() = inv_trans.inverse().cast_float()*math::CVectorFloat(twist_odometry.topRows(3));
+    twist_odometry_old.bottomRows<3>() = inv_trans.inverse().cast_float()*math::CVectorFloat(twist_odometry.bottomRows(3));
 
 }
 
